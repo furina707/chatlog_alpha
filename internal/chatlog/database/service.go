@@ -120,6 +120,13 @@ func (s *Service) GetMedia(_type string, key string) (*model.Media, error) {
 	return s.db.GetMedia(_type, key)
 }
 
+func (s *Service) GetDecryptedDBs() (map[string][]string, error) {
+	if s.db == nil {
+		return nil, nil
+	}
+	return s.db.GetDBs()
+}
+
 func (s *Service) initWebhook() error {
 	if s.webhook == nil {
 		return nil

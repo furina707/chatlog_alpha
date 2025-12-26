@@ -32,6 +32,9 @@ type DataSource interface {
 	// 设置回调函数
 	SetCallback(group string, callback func(event fsnotify.Event) error) error
 
+	// 获取数据库列表
+	GetDBs() (map[string][]string, error)
+
 	Close() error
 }
 

@@ -39,24 +39,19 @@ func (l *DLLLogger) initLogFile() {
 		return
 	}
 
-	// 获取当前工作目录
-	workDir, err := os.Getwd()
-	if err != nil {
-		// 如果获取失败，使用默认工作目录
-		workDir = DefaultWorkDir("")
-	}
+	// 使用默认工作目录
+	workDir := DefaultWorkDir("")
 
 	// 创建日志目录
-	logDir := filepath.Join(workDir, "logs")
+	logDir := filepath.Join(workDir, "log")
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		// 如果创建目录失败，禁用日志
 		l.enabled = false
 		return
 	}
 
-	// 生成日志文件名：dll_YYYYMMDD_HHMMSS.log
-	timestamp := time.Now().Format("20060102_150405")
-	logFileName := fmt.Sprintf("dll_%s.log", timestamp)
+	// 生成日志文件名：dll.log (不再使用时间戳，以便于查找，或者保持追加模式)
+	logFileName := "dll.log"
 	l.logPath = filepath.Join(logDir, logFileName)
 
 	// 创建日志文件

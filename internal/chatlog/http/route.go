@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"github.com/xuri/excelize/v2"
 
 	"github.com/sjzar/chatlog/internal/errors"
 	"github.com/sjzar/chatlog/pkg/util"
@@ -60,6 +61,7 @@ func (s *Service) initAPIRouter() {
 		api.GET("/contact", s.handleContacts)
 		api.GET("/chatroom", s.handleChatRooms)
 		api.GET("/session", s.handleSessions)
+		api.GET("/db", s.handleGetDBs)
 		api.POST("/cache/clear", s.handleClearCache)
 	}
 }
@@ -139,6 +141,40 @@ func (s *Service) handleChatlog(c *gin.Context) {
 			csvWriter.Write(m.CSV(c.Request.Host))
 		}
 		csvWriter.Flush()
+	case "xlsx", "excel":
+		f := excelize.NewFile()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Error().Err(err).Msg("Failed to close excel file")
+			}
+		}()
+		// Create a new sheet.
+		index, err := f.NewSheet("Sheet1")
+		if err != nil {
+			errors.Err(c, err)
+			return
+		}
+		// Set value of a cell.
+		headers := []string{"MessageID", "Time", "SenderName", "Sender", "TalkerName", "Talker", "Content"}
+		for i, header := range headers {
+			cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+			f.SetCellValue("Sheet1", cell, header)
+		}
+		for i, m := range messages {
+			row := m.CSV(c.Request.Host)
+			for j, val := range row {
+				cell, _ := excelize.CoordinatesToCellName(j+1, i+2)
+				f.SetCellValue("Sheet1", cell, val)
+			}
+		}
+		f.SetActiveSheet(index)
+		// Set headers
+		c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s_%s_%s.xlsx", q.Talker, start.Format("2006-01-02"), end.Format("2006-01-02")))
+		if err := f.Write(c.Writer); err != nil {
+			errors.Err(c, err)
+			return
+		}
 	case "json":
 		// json
 		c.JSON(http.StatusOK, messages)
@@ -182,6 +218,37 @@ func (s *Service) handleContacts(c *gin.Context) {
 	case "json":
 		// json
 		c.JSON(http.StatusOK, list)
+	case "xlsx", "excel":
+		f := excelize.NewFile()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Error().Err(err).Msg("Failed to close excel file")
+			}
+		}()
+		index, err := f.NewSheet("Contacts")
+		if err != nil {
+			errors.Err(c, err)
+			return
+		}
+		headers := []string{"UserName", "Alias", "Remark", "NickName"}
+		for i, header := range headers {
+			cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+			f.SetCellValue("Contacts", cell, header)
+		}
+		for i, contact := range list.Items {
+			row := []interface{}{contact.UserName, contact.Alias, contact.Remark, contact.NickName}
+			for j, val := range row {
+				cell, _ := excelize.CoordinatesToCellName(j+1, i+2)
+				f.SetCellValue("Contacts", cell, val)
+			}
+		}
+		f.SetActiveSheet(index)
+		c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		c.Writer.Header().Set("Content-Disposition", "attachment; filename=contacts.xlsx")
+		if err := f.Write(c.Writer); err != nil {
+			errors.Err(c, err)
+			return
+		}
 	default:
 		// csv
 		if format == "csv" {
@@ -226,6 +293,37 @@ func (s *Service) handleChatRooms(c *gin.Context) {
 	case "json":
 		// json
 		c.JSON(http.StatusOK, list)
+	case "xlsx", "excel":
+		f := excelize.NewFile()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Error().Err(err).Msg("Failed to close excel file")
+			}
+		}()
+		index, err := f.NewSheet("ChatRooms")
+		if err != nil {
+			errors.Err(c, err)
+			return
+		}
+		headers := []string{"Name", "Remark", "NickName", "Owner", "UserCount"}
+		for i, header := range headers {
+			cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+			f.SetCellValue("ChatRooms", cell, header)
+		}
+		for i, chatRoom := range list.Items {
+			row := []interface{}{chatRoom.Name, chatRoom.Remark, chatRoom.NickName, chatRoom.Owner, len(chatRoom.Users)}
+			for j, val := range row {
+				cell, _ := excelize.CoordinatesToCellName(j+1, i+2)
+				f.SetCellValue("ChatRooms", cell, val)
+			}
+		}
+		f.SetActiveSheet(index)
+		c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		c.Writer.Header().Set("Content-Disposition", "attachment; filename=chatrooms.xlsx")
+		if err := f.Write(c.Writer); err != nil {
+			errors.Err(c, err)
+			return
+		}
 	default:
 		// csv
 		if format == "csv" {
@@ -278,6 +376,37 @@ func (s *Service) handleSessions(c *gin.Context) {
 			c.Writer.WriteString(fmt.Sprintf("%s,%d,%s,%s,%s\n", session.UserName, session.NOrder, session.NickName, strings.ReplaceAll(session.Content, "\n", "\\n"), session.NTime))
 		}
 		c.Writer.Flush()
+	case "xlsx", "excel":
+		f := excelize.NewFile()
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Error().Err(err).Msg("Failed to close excel file")
+			}
+		}()
+		index, err := f.NewSheet("Sessions")
+		if err != nil {
+			errors.Err(c, err)
+			return
+		}
+		headers := []string{"UserName", "NOrder", "NickName", "Content", "NTime"}
+		for i, header := range headers {
+			cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+			f.SetCellValue("Sessions", cell, header)
+		}
+		for i, session := range sessions.Items {
+			row := []interface{}{session.UserName, session.NOrder, session.NickName, session.Content, session.NTime}
+			for j, val := range row {
+				cell, _ := excelize.CoordinatesToCellName(j+1, i+2)
+				f.SetCellValue("Sessions", cell, val)
+			}
+		}
+		f.SetActiveSheet(index)
+		c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+		c.Writer.Header().Set("Content-Disposition", "attachment; filename=sessions.xlsx")
+		if err := f.Write(c.Writer); err != nil {
+			errors.Err(c, err)
+			return
+		}
 	case "json":
 		// json
 		c.JSON(http.StatusOK, sessions)
@@ -570,5 +699,14 @@ func (s *Service) handleClearCache(c *gin.Context) {
 		"message":      "Cache cleared successfully",
 		"deletedCount": deletedCount,
 	})
+}
+
+func (s *Service) handleGetDBs(c *gin.Context) {
+	dbs, err := s.db.GetDecryptedDBs()
+	if err != nil {
+		errors.Err(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, dbs)
 }
 

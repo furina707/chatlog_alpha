@@ -1,798 +1,575 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chatlog</title>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlog 管理控制台</title>
     <style>
-      :root {
-        --primary-color: #3498db;
-        --primary-dark: #2980b9;
-        --success-color: #2ecc71;
-        --success-dark: #27ae60;
-        --error-color: #e74c3c;
-        --bg-light: #f5f5f5;
-        --bg-white: #ffffff;
-        --text-color: #333333;
-        --border-color: #dddddd;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        line-height: 1.6;
-        color: var(--text-color);
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #fafafa;
-      }
-
-      .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-      }
-
-      .welcome-text {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-
-      .api-section {
-        background-color: var(--bg-light);
-        border-radius: 10px;
-        padding: 25px;
-        width: 100%;
-        max-width: 850px;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-
-      h1 {
-        color: #2c3e50;
-        margin-bottom: 15px;
-      }
-
-      h2 {
-        color: var(--primary-color);
-        margin-top: 20px;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 8px;
-        display: inline-block;
-      }
-
-      h3 {
-        margin-top: 20px;
-        color: #34495e;
-      }
-
-      .docs-link {
-        color: var(--primary-color);
-        text-decoration: none;
-        font-weight: bold;
-        transition: all 0.2s ease;
-      }
-
-      .docs-link:hover {
-        text-decoration: underline;
-        color: var(--primary-dark);
-      }
-
-      .api-tester {
-        background-color: var(--bg-white);
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 25px;
-        margin-top: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-      }
-
-      .form-group {
-        margin-bottom: 18px;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        color: #34495e;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 14px;
-        transition: all 0.3s;
-      }
-
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-      }
-
-      input::placeholder,
-      textarea::placeholder {
-        color: #aaa;
-      }
-
-      button {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 12px 18px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      button:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-
-      button:active {
-        transform: translateY(0);
-      }
-
-      .result-container {
-        margin-top: 20px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        max-height: 400px;
-        overflow-y: auto;
-        white-space: pre-wrap;
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
-          monospace;
-        font-size: 14px;
-        line-height: 1.5;
-        position: relative;
-      }
-
-      .request-url {
-        background-color: #f0f0f0;
-        padding: 10px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
-          monospace;
-        font-size: 14px;
-        word-break: break-all;
-        border: 1px dashed #ccc;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .url-text {
-        flex-grow: 1;
-        margin-right: 10px;
-      }
-
-      .copy-url-button {
-        background-color: #9b59b6;
-        padding: 6px 12px;
-        font-size: 12px;
-        white-space: nowrap;
-      }
-
-      .loading {
-        text-align: center;
-        padding: 20px;
-        color: #666;
-      }
-
-      .loading::after {
-        content: "...";
-        animation: dots 1.5s steps(5, end) infinite;
-      }
-
-      @keyframes dots {
-        0%,
-        20% {
-          content: ".";
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
         }
-        40% {
-          content: "..";
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
         }
-        60% {
-          content: "...";
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        80%,
-        100% {
-          content: "";
+
+        /* Header */
+        header {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-      }
 
-      .tab-container {
-        display: flex;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-      }
-
-      .tab {
-        padding: 12px 20px;
-        cursor: pointer;
-        margin-right: 5px;
-        border-radius: 6px 6px 0 0;
-        font-weight: 500;
-        transition: all 0.2s;
-        border: 1px solid transparent;
-        border-bottom: none;
-        position: relative;
-        bottom: -1px;
-      }
-
-      .tab:hover {
-        background-color: #f0f8ff;
-      }
-
-      .tab.active {
-        background-color: var(--bg-white);
-        border-color: #e0e0e0;
-        color: var(--primary-color);
-        border-bottom: 1px solid white;
-      }
-
-      .tab-content {
-        display: none;
-        padding: 20px 0;
-      }
-
-      .tab-content.active {
-        display: block;
-        animation: fadeIn 0.3s;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        to {
-          opacity: 1;
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
-      }
 
-      .button-group {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-      }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: var(--bg-card);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            white-space: nowrap;
+        }
 
-      .copy-button {
-        background-color: var(--success-color);
-        padding: 8px 15px;
-        font-size: 14px;
-        margin-left: 10px;
-      }
+        .tab-btn:hover {
+            color: var(--primary);
+            background: #eff6ff;
+        }
 
-      .copy-button:hover {
-        background-color: var(--success-dark);
-      }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
 
-      .error-message {
-        color: var(--error-color);
-        font-weight: bold;
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 4px;
-        background-color: rgba(231, 76, 60, 0.1);
-        border-left: 4px solid var(--error-color);
-        display: none;
-      }
+        /* Content Area */
+        .tab-content {
+            display: none;
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease;
+        }
 
-      .api-description {
-        margin-bottom: 15px;
-        color: #555;
-      }
+        .tab-content.active {
+            display: block;
+        }
 
-      .badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 600;
-        margin-left: 8px;
-        background-color: rgba(52, 152, 219, 0.1);
-        color: var(--primary-color);
-      }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-      .optional-param {
-        font-size: 12px;
-        color: #777;
-        margin-left: 5px;
-        font-style: italic;
-      }
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
 
-      .required-field {
-        color: var(--error-color);
-        font-weight: bold;
-      }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Results */
+        .result-area {
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 15px;
+            position: relative;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .url-display {
+            font-family: monospace;
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* Database List Styles */
+        .db-group {
+            margin-bottom: 20px;
+        }
+        
+        .db-group-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .db-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .db-item {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .db-item:hover {
+            border-color: var(--primary);
+        }
+
+        .badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Helper Classes */
+        .hidden { display: none; }
+        .text-sm { font-size: 0.875rem; }
+        .text-gray { color: var(--text-secondary); }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="welcome-text">
-        <h1>🎉 恭喜！Chatlog 服务已成功启动</h1>
-        <p>
-          Chatlog 是一个帮助你轻松使用自己聊天数据的工具，现在你可以通过 HTTP
-          API 访问你的聊天记录、联系人和群聊信息。
-        </p>
-      </div>
+        <header>
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Chatlog 控制台
+            </h1>
+            <div>
+                <button id="clearCacheBtn" class="btn btn-danger text-sm">清除媒体缓存</button>
+            </div>
+        </header>
 
-      <div class="api-section">
-        <h2>🔍 API 接口与调试</h2>
-
-        <div class="api-tester">
-          <div class="tab-container">
-            <div class="tab active" data-tab="session">最近会话</div>
-            <div class="tab" data-tab="chatroom">群聊</div>
-            <div class="tab" data-tab="contact">联系人</div>
-            <div class="tab" data-tab="chatlog">聊天记录</div>
-          </div>
-
-          <!-- 会话查询表单 -->
-          <div class="tab-content active" id="session-tab">
-            <div class="api-description">
-              <p>
-                查询最近会话列表。<span class="badge">GET /api/v1/session</span>
-              </p>
-            </div>
-            <div class="form-group">
-              <label for="session-format"
-                >输出格式：<span class="optional-param">可选</span></label
-              >
-              <select id="session-format">
-                <option value="">默认</option>
-                <option value="json">JSON</option>
-                <option value="text">纯文本</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 群聊查询表单 -->
-          <div class="tab-content" id="chatroom-tab">
-            <div class="api-description">
-              <p>
-                查询群聊列表，可选择性地按关键词搜索。<span class="badge"
-                  >GET /api/v1/chatroom</span
-                >
-              </p>
-            </div>
-            <div class="form-group">
-              <label for="chatroom-keyword"
-                >搜索群聊：<span class="optional-param">可选</span></label
-              >
-              <input
-                type="text"
-                id="chatroom-keyword"
-                placeholder="输入关键词搜索群聊"
-              />
-            </div>
-            <div class="form-group">
-              <label for="chatroom-format"
-                >输出格式：<span class="optional-param">可选</span></label
-              >
-              <select id="chatroom-format">
-                <option value="">默认</option>
-                <option value="json">JSON</option>
-                <option value="text">纯文本</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 联系人查询表单 -->
-          <div class="tab-content" id="contact-tab">
-            <div class="api-description">
-              <p>
-                查询联系人列表，可选择性地按关键词搜索。<span class="badge"
-                  >GET /api/v1/contact</span
-                >
-              </p>
-            </div>
-            <div class="form-group">
-              <label for="contact-keyword"
-                >搜索联系人：<span class="optional-param">可选</span></label
-              >
-              <input
-                type="text"
-                id="contact-keyword"
-                placeholder="输入关键词搜索联系人"
-              />
-            </div>
-            <div class="form-group">
-              <label for="contact-format"
-                >输出格式：<span class="optional-param">可选</span></label
-              >
-              <select id="contact-format">
-                <option value="">默认</option>
-                <option value="json">JSON</option>
-                <option value="text">纯文本</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- 聊天记录查询表单 -->
-          <div class="tab-content" id="chatlog-tab">
-            <div class="api-description">
-              <p>
-                查询指定时间范围内与特定联系人或群聊的聊天记录。<span
-                  class="badge"
-                  >GET /api/v1/chatlog</span
-                >
-              </p>
-            </div>
-            <div class="form-group">
-              <label for="time"
-                >时间范围：<span class="required-field">*</span></label
-              >
-              <input
-                type="text"
-                id="time"
-                placeholder="例如：2023-01-01 或 2023-01-01~2023-01-31"
-              />
-            </div>
-            <div class="form-group">
-              <label for="talker"
-                >聊天对象：<span class="required-field">*</span></label
-              >
-              <input
-                type="text"
-                id="talker"
-                placeholder="wxid、群ID、备注名或昵称"
-              />
-            </div>
-            <div class="form-group">
-              <label for="sender"
-                >发送者：<span class="optional-param">可选</span></label
-              >
-              <input
-                type="text"
-                id="sender"
-                placeholder="指定消息发送者"
-              />
-            </div>
-            <div class="form-group">
-              <label for="keyword"
-                >关键词：<span class="optional-param">可选</span></label
-              >
-              <input
-                type="text"
-                id="keyword"
-                placeholder="搜索消息内容中的关键词"
-              />
-            </div>
-            <div class="form-group">
-              <label for="limit"
-                >返回数量：<span class="optional-param">可选</span></label
-              >
-              <input type="number" id="limit" placeholder="默认不做限制" />
-            </div>
-            <div class="form-group">
-              <label for="offset"
-                >偏移量：<span class="optional-param">可选</span></label
-              >
-              <input type="number" id="offset" placeholder="默认 0" />
-            </div>
-            <div class="form-group">
-              <label for="format"
-                >输出格式：<span class="optional-param">可选</span></label
-              >
-              <select id="format">
-                <option value="">默认</option>
-                <option value="text">纯文本</option>
-                <option value="json">JSON</option>
-                <option value="csv">CSV</option>
-              </select>
-            </div>
-          </div>
-
-          <button id="test-api">执行查询</button>
-
-          <div id="result-wrapper" style="display: none; margin-top: 20px">
-            <div class="request-url" id="request-url-container">
-              <span class="url-text" id="request-url"></span>
-              <button class="copy-button copy-url-button" id="copy-url">
-                复制请求URL
-              </button>
-            </div>
-            <div class="result-container" id="api-result">
-              <p>查询结果将显示在这里...</p>
-            </div>
-            <div class="button-group">
-              <button class="copy-button" id="copy-result">复制结果</button>
-            </div>
-          </div>
-          <div class="error-message" id="error-message"></div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">仪表盘 & 数据库</button>
+            <button class="tab-btn" onclick="switchTab('session')">最近会话</button>
+            <button class="tab-btn" onclick="switchTab('chatroom')">群聊管理</button>
+            <button class="tab-btn" onclick="switchTab('contact')">联系人</button>
+            <button class="tab-btn" onclick="switchTab('chatlog')">消息检索</button>
         </div>
-      </div>
 
-      <div class="api-section">
-        <h2>🤖 MCP 集成</h2>
-        <p>
-          Chatlog 支持 MCP (Model Context Protocol) SSE 协议，可与支持 MCP 的 AI
-          助手无缝集成。
-        </p>
-        <p>SSE 端点：<strong>/sse</strong></p>
-        <p>
-          详细集成指南请参考
-          <a
-            href="https://github.com/sjzar/chatlog/blob/main/docs/mcp.md"
-            class="docs-link"
-            target="_blank"
-            >MCP 集成指南</a
-          >
-        </p>
-      </div>
+        <!-- Dashboard / DB List -->
+        <div id="dashboard" class="tab-content active">
+            <h2>当前已解密数据库</h2>
+            <p class="text-gray" style="margin-bottom: 20px;">以下列出了所有当前正在使用的已解密 SQLite 数据库文件。</p>
+            <div id="db-list-container">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
 
-      <div class="api-section">
-        <h2>📚 更多资源</h2>
-        <p>
-          查看
-          <a
-            href="https://github.com/sjzar/chatlog"
-            class="docs-link"
-            target="_blank"
-            >GitHub 项目</a
-          >
-          获取完整文档和使用指南。
-        </p>
-        <p>
-          如果你有任何问题或建议，欢迎通过
-          <a
-            href="https://github.com/sjzar/chatlog/discussions"
-            class="docs-link"
-            target="_blank"
-            >Discussions</a
-          >
-          进行交流。
-        </p>
-      </div>
+        <!-- Session Tab -->
+        <div id="session" class="tab-content">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>关键词搜索 (可选)</label>
+                    <input type="text" id="session-keyword" placeholder="昵称 / 备注 / wxid">
+                </div>
+                <div class="form-group">
+                    <label>输出格式</label>
+                    <select id="session-format">
+                        <option value="json">JSON (预览)</option>
+                        <option value="csv">CSV 导出</option>
+                        <option value="xlsx">Excel 导出</option>
+                        <option value="text">纯文本</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="queryAPI('session')">查询 / 导出</button>
+            </div>
+            <div id="session-result" class="result-area hidden"></div>
+        </div>
 
-      <div class="api-section">
-        <h2>高级选项</h2>
-        <p>
-          清除服务器端所有已解密的图片/视频缓存。这不会删除原始的.dat文件，但会强制在下次请求时重新解密。
-        </p>
-        <button id="clearCacheBtn">清除缓存</button>
-      </div>
+        <!-- Chatroom Tab -->
+        <div id="chatroom" class="tab-content">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>搜索群聊 (可选)</label>
+                    <input type="text" id="chatroom-keyword" placeholder="群名称 / 群ID">
+                </div>
+                <div class="form-group">
+                    <label>输出格式</label>
+                    <select id="chatroom-format">
+                        <option value="json">JSON (预览)</option>
+                        <option value="csv">CSV 导出</option>
+                        <option value="xlsx">Excel 导出</option>
+                        <option value="text">纯文本</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="queryAPI('chatroom')">查询 / 导出</button>
+            </div>
+            <div id="chatroom-result" class="result-area hidden"></div>
+        </div>
+
+        <!-- Contact Tab -->
+        <div id="contact" class="tab-content">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>搜索联系人 (可选)</label>
+                    <input type="text" id="contact-keyword" placeholder="昵称 / 备注 / wxid">
+                </div>
+                <div class="form-group">
+                    <label>输出格式</label>
+                    <select id="contact-format">
+                        <option value="json">JSON (预览)</option>
+                        <option value="csv">CSV 导出</option>
+                        <option value="xlsx">Excel 导出</option>
+                        <option value="text">纯文本</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="queryAPI('contact')">查询 / 导出</button>
+            </div>
+            <div id="contact-result" class="result-area hidden"></div>
+        </div>
+
+        <!-- Chatlog Tab -->
+        <div id="chatlog" class="tab-content">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>时间范围 <span style="color:red">*</span></label>
+                    <input type="text" id="chatlog-time" placeholder="例如: 2023-01-01~2023-12-31">
+                </div>
+                <div class="form-group">
+                    <label>聊天对象 (Talker) <span style="color:red">*</span></label>
+                    <input type="text" id="chatlog-talker" placeholder="wxid / 群ID / 备注">
+                </div>
+                <div class="form-group">
+                    <label>发送者 (Sender) (可选)</label>
+                    <input type="text" id="chatlog-sender" placeholder="仅群聊有效，指定发送人">
+                </div>
+                <div class="form-group">
+                    <label>内容关键词 (可选)</label>
+                    <input type="text" id="chatlog-keyword" placeholder="正则匹配消息内容">
+                </div>
+                <div class="form-group">
+                    <label>限制数量 (Limit)</label>
+                    <input type="number" id="chatlog-limit" value="100">
+                </div>
+                <div class="form-group">
+                    <label>输出格式</label>
+                    <select id="chatlog-format">
+                        <option value="json">JSON (预览)</option>
+                        <option value="csv">CSV 导出</option>
+                        <option value="xlsx">Excel 导出</option>
+                        <option value="text">纯文本</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="queryAPI('chatlog')">查询 / 导出</button>
+            </div>
+            <div id="chatlog-result" class="result-area hidden"></div>
+        </div>
+
     </div>
 
     <script>
-      // 标签切换功能
-      document.querySelectorAll(".tab").forEach((tab) => {
-        tab.addEventListener("click", function () {
-          // 移除所有标签的活动状态
-          document
-            .querySelectorAll(".tab")
-            .forEach((t) => t.classList.remove("active"));
-          // 设置当前标签为活动状态
-          this.classList.add("active");
-
-          // 隐藏所有内容区域
-          document.querySelectorAll(".tab-content").forEach((content) => {
-            content.classList.remove("active");
-          });
-
-          // 显示当前标签对应的内容
-          const tabId = this.getAttribute("data-tab") + "-tab";
-          document.getElementById(tabId).classList.add("active");
-
-          // 清空结果区域
-          document.getElementById("result-wrapper").style.display = "none";
-          document.getElementById("api-result").innerHTML =
-            "<p>查询结果将显示在这里...</p>";
-          document.getElementById("request-url").textContent = "";
-          document.getElementById("error-message").style.display = "none";
-          document.getElementById("error-message").textContent = "";
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDBList();
         });
-      });
 
-      // API 测试功能
-      document
-        .getElementById("test-api")
-        .addEventListener("click", async function () {
-          const resultContainer = document.getElementById("api-result");
-          const requestUrlContainer = document.getElementById("request-url");
-          const errorMessage = document.getElementById("error-message");
-          const resultWrapper = document.getElementById("result-wrapper");
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            if(tabId === 'dashboard') {
+                loadDBList();
+            }
+        }
 
-          errorMessage.style.display = "none";
-          errorMessage.textContent = "";
+        // Load DB List
+        async function loadDBList() {
+            const container = document.getElementById('db-list-container');
+            try {
+                const res = await fetch('/api/v1/db');
+                if(!res.ok) throw new Error('Failed to load DB list');
+                const data = await res.json();
+                
+                let html = '';
+                for (const [group, files] of Object.entries(data)) {
+                    html += `
+                        <div class="db-group">
+                            <div class="db-group-title">
+                                <span class="badge">${group}</span>
+                                <span class="text-sm text-gray">(${files ? files.length : 0} files)</span>
+                            </div>
+                            <div class="db-list">
+                    `;
+                    
+                    if (files && files.length > 0) {
+                        files.forEach(file => {
+                            html += `<div class="db-item">${file}</div>`;
+                        });
+                    } else {
+                        html += `<div class="db-item text-gray">暂无文件</div>`;
+                    }
+                    
+                    html += `</div></div>`;
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = `<div class="text-danger">加载失败: ${e.message}</div>`;
+            }
+        }
 
-          try {
-            // 获取当前活动的标签
-            const activeTab = document
-              .querySelector(".tab.active")
-              .getAttribute("data-tab");
-            let url = "/api/v1/";
-            let params = new URLSearchParams();
+        // Generic API Query
+        async function queryAPI(type) {
+            const resultArea = document.getElementById(`${type}-result`);
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = '<div class="loading">正在处理...</div>';
 
-            // 根据不同的标签构建不同的请求
-            switch (activeTab) {
-              case "chatlog":
-                url += "chatlog";
-                const time = document.getElementById("time").value;
-                const talker = document.getElementById("talker").value;
-                const sender = document.getElementById("sender").value;
-                const keyword = document.getElementById("keyword").value;
-                const limit = document.getElementById("limit").value;
-                const offset = document.getElementById("offset").value;
-                const format = document.getElementById("format").value;
+            try {
+                let params = new URLSearchParams();
+                let format = 'json';
 
-                // 验证必填项
-                if (!time || !talker) {
-                  errorMessage.textContent =
-                    "错误: 时间范围和聊天对象为必填项！";
-                  errorMessage.style.display = "block";
-                  return;
+                if (type === 'session') {
+                    const kw = document.getElementById('session-keyword').value;
+                    format = document.getElementById('session-format').value;
+                    if(kw) params.append('keyword', kw);
+                } else if (type === 'chatroom') {
+                    const kw = document.getElementById('chatroom-keyword').value;
+                    format = document.getElementById('chatroom-format').value;
+                    if(kw) params.append('keyword', kw);
+                } else if (type === 'contact') {
+                    const kw = document.getElementById('contact-keyword').value;
+                    format = document.getElementById('contact-format').value;
+                    if(kw) params.append('keyword', kw);
+                } else if (type === 'chatlog') {
+                    const time = document.getElementById('chatlog-time').value;
+                    const talker = document.getElementById('chatlog-talker').value;
+                    if(!time || !talker) {
+                        alert('时间和聊天对象是必填项');
+                        resultArea.classList.add('hidden');
+                        return;
+                    }
+                    params.append('time', time);
+                    params.append('talker', talker);
+                    
+                    const sender = document.getElementById('chatlog-sender').value;
+                    if(sender) params.append('sender', sender);
+                    
+                    const kw = document.getElementById('chatlog-keyword').value;
+                    if(kw) params.append('keyword', kw);
+                    
+                    const limit = document.getElementById('chatlog-limit').value;
+                    if(limit) params.append('limit', limit);
+                    
+                    format = document.getElementById('chatlog-format').value;
                 }
 
-                if (time) params.append("time", time);
-                if (talker) params.append("talker", talker);
-                if (sender) params.append("sender", sender);
-                if (keyword) params.append("keyword", keyword);
-                if (limit) params.append("limit", limit);
-                if (offset) params.append("offset", offset);
-                if (format) params.append("format", format);
-                break;
+                params.append('format', format);
+                const url = `/api/v1/${type}?${params.toString()}`;
 
-              case "contact":
-                url += "contact";
-                const contactKeyword =
-                  document.getElementById("contact-keyword").value;
-                const contactFormat =
-                  document.getElementById("contact-format").value;
+                if (format === 'csv' || format === 'xlsx') {
+                    // Trigger download
+                    window.location.href = url;
+                    resultArea.innerHTML = `<div class="text-success">已触发 ${format.toUpperCase()} 下载。<br>请求URL: <span class="url-display">${url}</span></div>`;
+                } else {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(res.statusText);
+                    
+                    let text;
+                    if(format === 'json') {
+                        const json = await res.json();
+                        text = JSON.stringify(json, null, 2);
+                    } else {
+                        text = await res.text();
+                    }
 
-                if (contactKeyword) params.append("keyword", contactKeyword);
-                if (contactFormat) params.append("format", contactFormat);
-                break;
+                    resultArea.innerHTML = `
+                        <div class="result-header">
+                            <span class="url-display">${url}</span>
+                            <button class="btn btn-secondary text-sm" onclick="copyResult('${type}')">复制</button>
+                        </div>
+                        <pre id="${type}-pre">${escapeHtml(text)}</pre>
+                    `;
+                }
 
-              case "chatroom":
-                url += "chatroom";
-                const chatroomKeyword =
-                  document.getElementById("chatroom-keyword").value;
-                const chatroomFormat =
-                  document.getElementById("chatroom-format").value;
-
-                if (chatroomKeyword) params.append("keyword", chatroomKeyword);
-                if (chatroomFormat) params.append("format", chatroomFormat);
-                break;
-
-              case "session":
-                url += "session";
-                const sessionFormat =
-                  document.getElementById("session-format").value;
-
-                if (sessionFormat) params.append("format", sessionFormat);
-                break;
+            } catch (e) {
+                resultArea.innerHTML = `<div style="color:var(--danger)">请求错误: ${e.message}</div>`;
             }
+        }
 
-            // 添加参数到URL
-            const apiUrl = params.toString()
-              ? `${url}?${params.toString()}`
-              : url;
+        function escapeHtml(text) {
+            if (!text) return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-            // 获取完整URL（包含域名部分）
-            const fullUrl = window.location.origin + apiUrl;
+        function copyResult(type) {
+            const text = document.getElementById(`${type}-pre`).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已复制到剪贴板');
+            });
+        }
 
-            // 显示完整请求URL
-            requestUrlContainer.textContent = fullUrl;
-            resultWrapper.style.display = "block";
-
-            // 显示加载中
-            resultContainer.innerHTML = '<div class="loading">加载中</div>';
-
-            // 发送请求
-            const response = await fetch(apiUrl);
-
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
+        // Clear Cache
+        document.getElementById('clearCacheBtn').addEventListener('click', async () => {
+            if(!confirm('确定要清除所有解密的媒体文件缓存吗？')) return;
+            try {
+                const res = await fetch('/api/v1/cache/clear', { method: 'POST' });
+                const data = await res.json();
+                alert(`缓存已清除，共删除 ${data.deletedCount} 个文件`);
+            } catch (e) {
+                alert('清除失败: ' + e.message);
             }
-
-            // 获取响应内容类型
-            const contentType = response.headers.get("content-type");
-            let result;
-
-            if (contentType && contentType.includes("application/json")) {
-              // 如果是JSON，格式化显示
-              result = await response.json();
-              resultContainer.innerHTML = JSON.stringify(result, null, 2);
-            } else {
-              // 其他格式直接显示文本
-              result = await response.text();
-              resultContainer.innerHTML = result;
-            }
-          } catch (error) {
-            resultContainer.innerHTML = "";
-            errorMessage.textContent = `查询出错: ${error.message}`;
-            errorMessage.style.display = "block";
-            console.error("API查询出错:", error);
-          }
         });
-
-      // 复制结果功能
-      document
-        .getElementById("copy-result")
-        .addEventListener("click", function () {
-          const resultText = document.getElementById("api-result").innerText;
-          copyToClipboard(resultText, this, "已复制结果!");
-        });
-
-      // 复制URL功能
-      document
-        .getElementById("copy-url")
-        .addEventListener("click", function () {
-          // 获取完整URL（包含域名部分）
-          const urlText = document.getElementById("request-url").innerText;
-          copyToClipboard(urlText, this, "已复制URL!");
-        });
-
-      // 通用复制功能
-      function copyToClipboard(text, button, successMessage) {
-        navigator.clipboard
-          .writeText(text)
-          .then(() => {
-            const originalText = button.textContent;
-            button.textContent = successMessage;
-            setTimeout(() => {
-              button.textContent = originalText;
-            }, 2000);
-          })
-          .catch((err) => {
-            console.error("复制失败:", err);
-          });
-      }
-
-      // Clear cache button functionality
-      document.getElementById('clearCacheBtn').addEventListener('click', function() {
-          const btn = this;
-          if (!confirm('您确定要清除所有已解密的图片/视频缓存吗？\n\n这不会删除原始聊天记录，但下次加载图片时会需要重新解密，速度会变慢。')) {
-              return;
-          }
-
-          const originalText = btn.textContent;
-          btn.textContent = '清除中...';
-          btn.disabled = true;
-
-          fetch('/api/v1/cache/clear', {
-              method: 'POST'
-          })
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error('网络响应错误，状态码: ' + response.status);
-              }
-              return response.json();
-          })
-          .then(data => {
-              alert('缓存已清除！共删除了 ' + data.deletedCount + ' 个文件。');
-              btn.textContent = originalText;
-              btn.disabled = false;
-          })
-          .catch(error => {
-              console.error('Error clearing cache:', error);
-              alert('清除缓存失败，请查看浏览器控制台获取更多信息。');
-              btn.textContent = originalText;
-              btn.disabled = false;
-          });
-      });
     </script>
-  </body>
+</body>
 </html>

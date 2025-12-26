@@ -23,20 +23,27 @@ func initLog(cmd *cobra.Command, args []string) {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
+	logDir := filepath.Join(util.DefaultWorkDir(""), "log")
+	_ = util.PrepareDir(logDir)
+	logFile := filepath.Join(logDir, "chatlog.log")
+	logFD, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+
+	writers := []io.Writer{zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}}
+	if err == nil {
+		writers = append(writers, zerolog.ConsoleWriter{Out: logFD, NoColor: true, TimeFormat: time.RFC3339})
+	}
+
+	log.Logger = log.Output(io.MultiWriter(writers...))
 }
 
 func initTuiLog(cmd *cobra.Command, args []string) {
-	logOutput := io.Discard
+	logDir := filepath.Join(util.DefaultWorkDir(""), "log")
+	_ = util.PrepareDir(logDir)
+	logFile := filepath.Join(logDir, "chatlog.log")
+	logFD, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
 
-	debug, _ := cmd.Flags().GetBool("debug")
-	if debug {
-		logpath := util.DefaultWorkDir("")
-		util.PrepareDir(logpath)
-		logFD, err := os.OpenFile(filepath.Join(logpath, "chatlog.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
-		if err != nil {
-			panic(err)
-		}
+	logOutput := io.Discard
+	if err == nil {
 		logOutput = logFD
 	}
 

@@ -805,6 +805,19 @@ func (ds *DataSource) GetVoice(ctx context.Context, key string) (*model.Media, e
 	return nil, errors.ErrMediaNotFound
 }
 
+func (ds *DataSource) GetDBs() (map[string][]string, error) {
+	result := make(map[string][]string)
+	for _, group := range Groups {
+		paths, err := ds.dbm.GetDBPath(group.Name)
+		if err != nil {
+			// Ignore groups with no files
+			continue
+		}
+		result[group.Name] = paths
+	}
+	return result, nil
+}
+
 func (ds *DataSource) Close() error {
 	return ds.dbm.Close()
 }
